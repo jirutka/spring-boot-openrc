@@ -49,7 +49,7 @@ start_pre() {
 		|| { eerror "File '$jar_file' does not exist!"; return 1; }
 
 	[ -z "$server_port" ] \
-		|| ${server_bind_address:=0.0.0.0}
+		|| : ${server_bind_address:=0.0.0.0}
 
 	if [ -n "$server_port" ] && nc -z "$server_bind_address" "$server_port"; then
 		eerror "Port $server_port is already in use!"; return 1
