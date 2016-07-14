@@ -2,7 +2,7 @@
 # vim: set ft=sh: ts=4:
 # source: https://github.com/jirutka/spring-boot-openrc
 
-VERSION='0.0.0'
+VERSION='0.1.0'
 
 : ${name:=$RC_SVCNAME}
 : ${user:=nobody}
