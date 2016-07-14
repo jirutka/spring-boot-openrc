@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+: ${DESTDIR:=}
+
+cd "$(dirname "$0")"
+
+install -Dv -m 755 spring-boot.initd "$DESTDIR"/etc/init.d/spring-boot
+install -Dv -m 644 spring-boot.confd "$DESTDIR"/etc/conf.d/spring-boot
