@@ -1,0 +1,73 @@
+# /etc/conf.d/spring-boot
+# vim: set ft=sh:
+# source: https://github.com/jirutka/spring-boot-openrc
+
+#
+# This is an example configuration for spring-boot runscript. It contains all
+# user-definable variables. Commented out variables represents default values.
+# If the default value is suitable for you, then you can omit that variable
+# in your derived config.
+#
+# YOU SHOULD NOT MODIFY THIS FILE! CREATE A COPY NAMED AFTER THE APPLICATION
+# YOU WANT TO RUN AND MODIFY THAT INSTEAD (and remove this notice).
+#
+
+
+# Display name of the application (default is the name of the runscript file).
+#name="$RC_SVCNAME"
+
+# User to run the application.
+#user="nobody"
+
+# Path of the log file where to redirect stdout/stderr.
+console_log_file="/var/log/$RC_SVCNAME/console.log"
+
+# You may use rc_need, rc_use, rc_after, rc_before and rc_provide variables to
+# influence the dependencies of the service.
+#rc_use=
+
+
+# Path of the JAR file to run (REQUIRED).
+jar_file=
+
+# Path of the application's main configuration file.
+# This sets option --spring.config.location.
+#config_path=
+
+# Path of the application's log file.
+# This sets options --logging.path and logging.file.
+app_log_file="/var/log/$RC_SVCNAME/application.log"
+
+# The port to listen on for HTTP connections.
+# This sets option --server.port.
+#server_port=
+
+# The name or IP address of the interface to listen on for HTTP connections
+# (default is all interfaces).
+# This sets option --server.address.
+#server_bind_address="0.0.0.0"
+
+# The relative URL root (i.e. context path) of the application.
+# This sets option --server.context-path.
+#context_path=
+
+# Additional options to pass to the application.
+#jar_opts=
+
+
+# Initial and maximum size of the heap (in megabytes).
+# This sets options -Xms and -Xmx.
+java_heap_size="128"
+
+# Java system properties to pass to the JVM.
+# Define space separated tuples of <name>=<value>; it will be transformed into
+# -D<name>=<value> arguments for java.
+#java_properties=
+
+# A colon or space separated list of directories, JAR archives, and ZIP
+# archives to search for class files.
+# This sets option -classpath.
+#java_classpath=
+
+# Additional options to pass to the JVM.
+java_opts="-XX:+UseG1GC -XX:MaxGCPauseMillis=80"

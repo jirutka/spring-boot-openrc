@@ -1,0 +1,97 @@
+#!/sbin/openrc-run
+# vim: set ft=sh: ts=4:
+# source: https://github.com/jirutka/spring-boot-openrc
+
+VERSION='0.0.0'
+
+: ${name:=$RC_SVCNAME}
+: ${user:=nobody}
+
+extra_commands='version'
+describe_version='Show version of this script'
+
+command="${JAVA_HOME:+$JAVA_HOME/bin/}java"
+command_background='true'
+
+start_stop_daemon_args="
+	--quiet
+	--user $user
+	--chdir $(dirname "$jar_file")
+	${console_log_file:+--stdout $console_log_file}
+	${console_log_file:+--stderr $console_log_file}"
+pidfile="/run/$RC_SVCNAME.pid"
+retry='TERM/20/KILL/5'
+
+required_dirs="$(dirname "$pidfile")"
+
+depend() {
+	need net
+	after localmount firewall
+}
+
+start_pre() {
+	if [ "$RC_SVCNAME" = 'spring-boot' ]; then
+		eerror ''
+		eerror 'You are not supposed to run this runscript directly. Instead, you should'
+		eerror 'create a symlink for the app you want to run as well as a copy of the'
+		eerror 'configuration file and modify it appropriately, like so:'
+		eerror ''
+		eerror '    ln -s spring-boot /etc/init.d/myapp'
+		eerror '    cp /etc/conf.d/spring-boot /etc/conf.d/myapp'
+		eerror ''
+		return 1
+	fi
+
+	[ -n "$jar_file" ] \
+		|| { eerror "Variable \$jar_file must be set!"; return 1; }
+
+	[ -f "$jar_file" ] \
+		|| { eerror "File '$jar_file' does not exist!"; return 1; }
+
+	[ -z "$server_port" ] \
+		|| ${server_bind_address:=0.0.0.0}
+
+	if [ -n "$server_port" ] && nc -z "$server_bind_address" "$server_port"; then
+		eerror "Port $server_port is already in use!"; return 1
+	fi
+
+	local path; for path in $console_log_file $app_log_file; do
+		[ -d "$(dirname "$path")" ] || checkpath -o "$user" -d "$(dirname "$path")"
+		checkpath -o "$user" -f "$path"
+	done
+
+	java_opts="
+		-server
+		${java_classpath:+ -classpath ${java_classpath// /:}}
+		${java_heap_size:+ -Xms${java_heap_size}M -Xmx${java_heap_size}M}
+		-Djava.awt.headless=true
+		-Dfile.encoding=utf-8
+		$java_opts"
+
+	local item; for item in $java_properties; do
+		java_opts="$java_opts -D${item}"
+	done
+
+	jar_opts="
+		$(optif --spring.config.location "$config_path")
+		$(optif --logging.file "$app_log_file")
+		${app_log_file:+--logging.path=$(dirname "$app_log_file")}
+		$(optif --server.port "$server_port")
+		$(optif --server.address "$server_bind_address")
+		$(optif --server.context-path "$context_path")
+		$jar_opts"
+
+	command_args="$java_opts -jar $jar_file $jar_opts"
+
+	if yesno "$EINFO_VERBOSE"; then
+		einfo "Command: $command $(echo $command_args)"
+	fi
+}
+
+version() {
+	echo "spring-boot-openrc $VERSION"
+}
+
+optif() {
+	test -n "$2" && echo "$1=$2"
+}
