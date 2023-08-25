@@ -17,7 +17,7 @@
 #name="$RC_SVCNAME"
 
 # User to run the application.
-#user="nobody"
+#command_user="nobody"
 
 # Path of the log file where to redirect stdout/stderr.
 console_log_file="/var/log/$RC_SVCNAME/console.log"
