@@ -1,15 +1,11 @@
 #!/sbin/openrc-run
 # vim: set ft=sh: ts=4 sw=4:
-# source: https://github.com/jirutka/spring-boot-openrc
-
-VERSION='0.1.1'
+# Source: https://github.com/jirutka/spring-boot-openrc
+# Version: 0.1.1
 
 : ${name:="$RC_SVCNAME"}
 : ${command_user:=${user:-"nobody"}}
 : ${retry:="TERM/20/KILL/5"}
-
-extra_commands="version"
-describe_version="Show version of this script"
 
 command="${JAVA_HOME:+$JAVA_HOME/bin/}java"
 command_background="yes"
@@ -80,10 +76,6 @@ start_pre() {
 	if yesno "$EINFO_VERBOSE"; then
 		einfo "Command: $command $(echo $command_args)"
 	fi
-}
-
-version() {
-	echo "spring-boot-openrc $VERSION"
 }
 
 optif() {
